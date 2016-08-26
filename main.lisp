@@ -1,4 +1,4 @@
-(defpackage :conlang-dict
+(defpackage :vitvaktu.conlang-dict.gui
   (:use :cl :qt)
   (:export :main))
 (in-package :conlang-dict)
