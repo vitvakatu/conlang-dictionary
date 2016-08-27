@@ -55,5 +55,12 @@
 
 (defun create-word (str)
     (loop for c across str
-       append (list (make-instance 'literal :name c)) into literals
-         finally (return literals)))
+       append (list (make-instance 
+                     'literal 
+                     :name c)) into literals
+       finally (return 
+                 (let ((word (make-instance 'word)))
+                   (loop for l in literals do 
+                        (vector-push-extend l (literals word)))
+                   word))))
+                   
