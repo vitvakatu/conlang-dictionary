@@ -17,7 +17,25 @@
   (:use :cl))
 (in-package :vitvakatu.conlang-dict.core)
 
+(defclass letter ()
+  ((name 
+    :initarg :name
+    :initform (error "Need to specify letter's name")
+    :accessor name)))
+
+(defclass word ()
+  ((letters
+    :initarg :letters
+    :initform (make-array 0 
+                          :fill-pointer 0 
+                          :adjustable t
+                          :element-type 'letter-class)
+    :accessor letters)))
+
 (defvar *letters* ())
+
+(defun letter= (f s)
+  (char= (name f) (name s)))
 
 (defun check-letter (letter)
   (if (find letter *letters* :test 'char=)
@@ -35,3 +53,7 @@
 (defun clear-letters ()
   (setf *letters* ()))
 
+(defun create-word (str)
+    (loop for c across str
+       append (list (make-instance 'letter :name c)) into letters
+         finally (return letters)))
