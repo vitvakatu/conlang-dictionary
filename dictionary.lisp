@@ -17,43 +17,43 @@
   (:use :cl))
 (in-package :vitvakatu.conlang-dict.core)
 
-(defclass letter ()
+(defclass literal ()
   ((name 
     :initarg :name
-    :initform (error "Need to specify letter's name")
+    :initform (error "Need to specify literal's name")
     :accessor name)))
 
 (defclass word ()
-  ((letters
-    :initarg :letters
+  ((literals
+    :initarg :literals
     :initform (make-array 0 
                           :fill-pointer 0 
                           :adjustable t
-                          :element-type 'letter-class)
-    :accessor letters)))
+                          :element-type 'literal)
+    :accessor literals)))
 
-(defvar *letters* ())
+(defvar *literals* ())
 
-(defun letter= (f s)
+(defun literal= (f s)
   (char= (name f) (name s)))
 
-(defun check-letter (letter)
-  (if (find letter *letters* :test 'char=)
+(defun check-literal (literal)
+  (if (find literal *literals* :test 'char=)
       t
       nil))
 
-(defun add-letter (letter)
-  (when (null (check-letter letter))
-    (setf *letters* (append *letters* (list letter)))))
+(defun add-literal (literal)
+  (when (null (check-literal literal))
+    (setf *literals* (append *literals* (list literal)))))
 
-(defun remove-letter (letter)
-  (when (check-letter letter)
-    (setf *letters* (remove letter *letters* :test 'char=))))
+(defun remove-literal (literal)
+  (when (check-literal literal)
+    (setf *literals* (remove literal *literals* :test 'char=))))
 
-(defun clear-letters ()
-  (setf *letters* ()))
+(defun clear-literals ()
+  (setf *literals* ()))
 
 (defun create-word (str)
     (loop for c across str
-       append (list (make-instance 'letter :name c)) into letters
-         finally (return letters)))
+       append (list (make-instance 'literal :name c)) into literals
+         finally (return literals)))
