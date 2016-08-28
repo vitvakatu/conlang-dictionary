@@ -21,7 +21,7 @@
   ((name 
     :initarg :name
     :initform (error "Need to specify literal's name")
-    :accessor name)))
+    :reader name)))
 
 (defclass word ()
   ((literals
@@ -31,6 +31,10 @@
                           :adjustable t
                           :element-type 'literal)
     :accessor literals)))
+
+(defun word->string (word)
+  (loop for l across (literals word) collect (name l) into str
+       finally (return (format nil "~{~a~}" str))))
 
 (defvar *literals* ())
 
