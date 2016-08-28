@@ -30,7 +30,10 @@
                           :fill-pointer 0 
                           :adjustable t
                           :element-type 'literal)
-    :accessor literals)))
+    :accessor literals)
+   (translations
+    :initarg :translations
+    :accessor translations)))
 
 (defclass dictionary ()
   ((words
@@ -44,6 +47,10 @@
 (defun word->string (word)
   (loop for l across (literals word) collect (name l) into str
        finally (return (format nil "~{~a~}" str))))
+
+(defun trans->string (word)
+  (loop for tr in (translations word) collect tr into str
+       finally (return (format nil "~{~a~^, ~}" str))))
 
 (defvar *literals* ())
 
@@ -98,13 +105,14 @@
 (defun clear-literals ()
   (setf *literals* ()))
                    
-(defun create-word (str)
+(defun create-word (str trans)
   (let ((word (make-instance 'word)))
     (loop for c across str do
          (vector-push-extend (make-instance
                               'literal
                               :name c)
                              (literals word)))
+    (setf (translations word) trans)
     word))
 
 (defun check-word (word dictionary)
@@ -119,3 +127,6 @@
 (defun remove-word (word dictionary)
   (when (check-word word dictionary)
     (remove word (words dictionary) :test #'word=)))
+
+(defun replace-translations (word trans)
+  (setf (translations word) trans))
