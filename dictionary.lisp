@@ -70,15 +70,12 @@
 
 (defun clear-literals ()
   (setf *literals* ()))
-
-(defun create-word (str)
-    (loop for c across str
-       append (list (make-instance 
-                     'literal 
-                     :name c)) into literals
-       finally (return 
-                 (let ((word (make-instance 'word)))
-                   (loop for l in literals do 
-                        (vector-push-extend l (literals word)))
-                   word))))
                    
+(defun create-word (str)
+  (let ((word (make-instance 'word)))
+    (loop for c across str do
+         (vector-push-extend (make-instance
+                              'literal
+                              :name c)
+                             (literals word)))
+    word))
