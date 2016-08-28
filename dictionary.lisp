@@ -130,3 +130,12 @@
 
 (defun replace-translations (word trans)
   (setf (translations word) trans))
+
+(defun save-dictionary (dict filename)
+  (with-open-file (stream filename 
+                          :direction :output
+                          :if-exists :overwrite)
+    (loop for w across (words dict) do
+         (format stream "~:s~%" (list
+                                (word->string w)
+                                (translations w))))))
