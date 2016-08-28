@@ -32,6 +32,15 @@
                           :element-type 'literal)
     :accessor literals)))
 
+(defclass dictionary ()
+  ((words
+    :initarg :words
+    :initform (make-array 0
+                          :fill-pointer 0
+                          :adjustable t
+                          :element-type 'word)
+    :accessor words)))
+
 (defun word->string (word)
   (loop for l across (literals word) collect (name l) into str
        finally (return (format nil "~{~a~}" str))))
@@ -52,8 +61,22 @@
 (defmethod literal= ((f literal) (s literal))
   (string= (name f) (name s)))
 
+(defgeneric word= (f s))
+
+(defmethod word= ((f string) (s string))
+  (string= f s))
+
+(defmethod word= ((f word) (s string))
+  (string= (word->string f) s))
+
+(defmethod word= ((f string) (s word))
+  (string= f (word->string s)))
+
+(defmethod word= ((f word) (s word))
+  (string= (word->string f) (word->string s)))
+
 (defun check-literal (literal)
-  (if (find literal *literals* :test 'literal=)
+  (if (find literal *literals* :test #'literal=)
       t
       nil))
 
@@ -70,7 +93,7 @@
                               'literal
                               :name str)
                              *literals* 
-                             :test 'literal=))))
+                             :test #'literal=))))
 
 (defun clear-literals ()
   (setf *literals* ()))
@@ -83,3 +106,16 @@
                               :name c)
                              (literals word)))
     word))
+
+(defun check-word (word dictionary)
+  (if (find word (words dictionary) :test #'word=)
+      t
+      nil))
+
+(defun add-word (word dictionary)
+  (when (null (check-word word dictionary))
+    (vector-push-extend word (words dictionary))))
+
+(defun remove-word (word dictionary)
+  (when (check-word word dictionary)
+    (remove word (words dictionary) :test #'word=)))
