@@ -34,21 +34,39 @@
 
 (defvar *literals* ())
 
-(defun literal= (f s)
-  (char= (name f) (name s)))
+(defgeneric literal= (f s))
+
+(defmethod literal= ((f string) (s string))
+  (string= f s))
+
+(defmethod literal= ((f literal) (s string))
+  (string= (name f) s))
+
+(defmethod literal= ((f string) (s literal))
+  (string= f (name s)))
+
+(defmethod literal= ((f literal) (s literal))
+  (string= (name f) (name s)))
 
 (defun check-literal (literal)
-  (if (find literal *literals* :test 'char=)
+  (if (find literal *literals* :test 'literal=)
       t
       nil))
 
-(defun add-literal (literal)
-  (when (null (check-literal literal))
-    (setf *literals* (append *literals* (list literal)))))
+(defun add-literal (str)
+  (when (null (check-literal str))
+    (setf *literals* (append *literals* (list
+                                         (make-instance
+                                          'literal
+                                          :name str))))))
 
-(defun remove-literal (literal)
-  (when (check-literal literal)
-    (setf *literals* (remove literal *literals* :test 'char=))))
+(defun remove-literal (str)
+  (when (check-literal str)
+    (setf *literals* (remove (make-instance 
+                              'literal
+                              :name str)
+                             *literals* 
+                             :test 'literal=))))
 
 (defun clear-literals ()
   (setf *literals* ()))
